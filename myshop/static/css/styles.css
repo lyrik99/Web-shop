@@ -44,3 +44,7 @@ footer {
     bottom: 0;
     width: 100%;
 }
+
+.order-details {
+    display: none;
+}

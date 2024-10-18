@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Profile - Purchase History{% endblock %}
+
+{% block content %}
+<h1>Ваш список заказов</h1>
+
+{% if orders %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID заказа</th>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>Сумма</th>
+                <th>Детали</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.created_at|date:"d M Y H:i" }}</td>
+                <td>{{ order.get_status_display }}</td>
+                <td>${{ order.total }}</td>
+                <td>
+                    <button class="details-button" onclick="toggleDetails('details-{{ order.id }}')">
+                        View Details
+                    </button>
+                </td>
+            </tr>
+            <tr id="details-{{ order.id }}" class="order-details" style="display: none;">
+                <td colspan="5">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Товар</th>
+                                <th>Количество</th>
+                                <th>Цена</th>
+                                <th>Сумма</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>${{ item.price }}</td>
+                                <td>${{ item.get_total_price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>У вас нет предыдущих заказов</p>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleDetails(id) {
+        console.log('Toggle details for order:', id);
+        var details = document.getElementById(id);
+        if (details) {
+            if (details.style.display === "none" || details.style.display === "") {
+                details.style.display = "table-row";
+                console.log('Showing details for:', id);
+            } else {
+                details.style.display = "none";
+                console.log('Hiding details for:', id);
+            }
+        } else {
+            console.error('No element found with id:', id);
+        }
+    }
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleDetails(id) {
+        var details = document.getElementById(id);
+        if (details.style.display === "none") {
+            details.style.display = "table-row";
+        } else {
+            details.style.display = "none";
+        }
+    }
+</script>
+{% endblock %}

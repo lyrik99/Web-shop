@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Profile - Purchase history{% endblock %}
+
+{% block content %}
+<h1>Ваш список заказов</h1>
+
+{% if orders %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID заказа</th>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>Сумма</th>
+                <th>Детали</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.created_at|date:"d M Y H:i" }}</td>
+                <td>{{ order.get_status_display }}</td>
+                <td>{{ order.total }} руб.</td>
+                <td>
+                    <button class="details-button" onclick="toggleDetails('details-{{ order.id }}')">
+                        Посмотреть детали
+                    </button>
+                </td>
+                <td>
+                    {% if order.status == 'в обработке' %}
+                    <form action="{% url 'accounts:cancel_order' order.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="cancel-button">
+                            Отменить заказ
+                        </button>
+                    </form>
+                    {% elif order.status == 'отменен' %}
+                    <form action="{% url 'accounts:delete_order' order.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-button">
+                            Удалить
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr id="details-{{ order.id }}" class="order-details" style="display: none;">
+                <td colspan="6">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Товар</th>
+                                <th>Количество</th>
+                                <th>Цена</th>
+                                <th>Сумма</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td>{{ item.product.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.price }} руб.</td>
+                                <td>{{ item.get_total_price }} руб.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>У вас не было заказов</p>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleDetails(id) {
+        var details = document.getElementById(id);
+        if (details.style.display === "none") {
+            details.style.display = "table-row";
+        } else {
+            details.style.display = "none";
+        }
+    }
+</script>
+{% endblock %}

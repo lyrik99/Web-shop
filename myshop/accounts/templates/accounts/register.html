@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Register{% endblock %}
 {% block content %}
-    <a href="{% url 'login' %}">Already have an account? Login here.</a>
-    <h2>Register</h2>
+    <a href="{% url 'accounts:login' %}">Уже есть аккаунт?</a>
+    <h2>Регистрация</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Register</button>
+        <button type="submit">Регистрация</button>
     </form>
 {% endblock %}

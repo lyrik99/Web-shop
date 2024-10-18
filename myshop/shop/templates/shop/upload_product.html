@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Upload product{% endblock %}
+
+{% block content %}
+<h1>Загрузить товар</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Загрузить</button>
+</form>
+
+<a href="{% url 'product_list' %}">Назад к списку товаров</a>
+{% endblock %}
